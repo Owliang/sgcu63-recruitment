@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <p id="answer"> Directory in array : <br></p>
+    <script>
+        var myJSON = '{ "FolderA": {' +
+                            '"_files": [ "file1", "file2" ] ,' +
+                            '"SubfolderC": {' +
+                                '"_files" : [ "file1" ]' +
+                            '} ,' +
+                            '"SubfolderB": {' +
+                                '"_files" : [ "file1" ]' +
+                            '}' +
+                        '}' +
+                    '}';
+
+        var arr = fileSearch("file1", myJSON);
+        for (e of arr) {
+            document.getElementById("answer").innerHTML += e + "<br>";
+        }
+
+        // return a number of word in string
+        function countChar(string, word) {
+            return string.split(word).length - 1;
+        }
+
+        // assumption: No duplicate folder names in the same folder
+        // assumption: No more than one "_files" key per folder
+        // assumption: Don't care pper-case or lower-case letters
+        function fileSearch(fileToSearch, filesObj) {
+            var myObj = JSON.parse(filesObj);
+            var arr = fileSearch2(fileToSearch, myObj, [],  "");
+            arr.sort(function(x, y) {
+                var xCount = countChar(x,"/");
+                var yCount = countChar(y,"/");
+                if (xCount == yCount) {
+                    if (x.toUpperCase() > y.toUpperCase()) {
+                        return 1;
+                    }
+                    return -1;
+                }
+                return (xCount - yCount);
+            });
+            return arr;
+        }
+        
+        // DFS through all the possibilities
+        function fileSearch2(fileToSearch, myObj, arr, curDir) {
+            for (k in myObj) {
+                if (k == "_files") {
+                    for (e of myObj[k]) {
+                        if (e == fileToSearch) {
+                            arr.push(curDir + "/" + e);
+                        }
+                    }
+                } else {
+                    fileSearch2(fileToSearch, myObj[k], arr, curDir + "/" + k);
+                }
+            }
+            return arr;
+        }
+    </script>
+</body>
+</html>

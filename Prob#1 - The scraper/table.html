@@ -29,7 +29,7 @@
     </style>
 </head>
 <body>
-    <table id="myTable" style="width:50%">
+    <table id="myTable" style="width:1000px">
         <thead>
             <tr>
                 <th>ชื่อบ้าน</th><th>สโกแกน</th>
@@ -87,6 +87,23 @@
             }
             
             // assumption: No need for specific baan order
+            /* This function can avoid CORS without web browser extension
+             * but quite slow for the first time.
+             * */
+            function doGet(engName, thaiName) {
+                $.get("https://cors-anywhere.herokuapp.com/https://rubnongkaomai.com/baan/" + engName, function(response) {
+                    var result = response.match(/og:description" content="([\s\S]*?)"/);
+                    var slogan = result[0].slice(25,-1);
+                    var row = document.getElementById("myTable").insertRow(-1);
+                    row.insertCell(0).innerHTML = thaiName;
+                    row.insertCell(1).innerHTML = slogan;
+                });
+            }
+
+            /* you can use this function instead if you have avoid-CORS
+             * extension in your web browser.
+             * */
+            /*
             function doGet(engName, thaiName) {
                 $.get("https://rubnongkaomai.com/baan/" + engName, function(response) {
                     var result = response.match(/og:description" content="([\s\S]*?)"/);
@@ -96,6 +113,7 @@
                     row.insertCell(1).innerHTML = slogan;
                 });
             }
+            */
 
         });
     </script>
